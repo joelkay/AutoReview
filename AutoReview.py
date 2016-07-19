@@ -144,14 +144,20 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 
 ########################################BLANKS/SPECIAL STOCK CODES######################################
 # clear items with No demand and No stock from our attention
-	
-	if  sheet.cell(row=rowNum, column=Supplier).value == 'UKWER01' or sheet.cell(row=rowNum, column=Supplier).value == 'UKTHU01':#WER Roberts stuff on Kanban
+	if  sheet.cell(row=rowNum, column=StockCode).value == 'Q8-6296' or sheet.cell(row=rowNum, column=StockCode).value == 'Q8-6296-1':#Direct ship orders
+		if debug: print "[Phase:1]Item marked with No Action"
+		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
+		sheet2.cell(row=rowNum, column=Comments).value = 'Direct Ship' # JK Comment(col.59) 
+
+	#packaging supplies
+	if  sheet.cell(row=rowNum, column=Supplier).value == 'UKWER01' or sheet.cell(row=rowNum, column=Supplier).value == 'UKTHU01' or sheet.cell(row=rowNum, column=Supplier).value == 'UKCRU01':#WER Roberts stuff on Kanban
 		if debug: print "[Phase:1]Item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = 'Packaging Supplies - Kanban' # JK Comment(col.59) 
 
+
 	#GLOBAL CLEAR OUT CODES THAT are not selling but need to get reset to safety stock.
-	if sheet.cell(row=rowNum, column=OpenDemand).value == 0 and sheet.cell(row=rowNum, column=OnHand).value == 0: 
+	if sheet.cell(row=rowNum, column=OpenDemand).value == 0 and sheet.cell(row=rowNum, column=OnHand).value == 0 and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if sheet.cell(row=rowNum, column=SafetyStock).value == 0 or sheet.cell(row=rowNum, column=SafetyStock).value == 'NULL':
 			if debug: print "[Phase:2]Item marked with No Action"
@@ -164,7 +170,7 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 			sheet2.cell(row=rowNum, column=OrderQty).value = sheet.cell(row=rowNum, column=SafetyStock).value # Order S/Stock Value if it is low.
 
 # mark blank codes as Kit(No Action)
-	if sheet.cell(row=rowNum, column=ABC).value is None: 
+	if sheet.cell(row=rowNum, column=ABC).value is None and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    # Net Stock(col.67) and Open Demand(col.66) is 0
 		if debug: print "[Phase:1b]BLANK ABC item marked with Kit(No Action)"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
@@ -172,7 +178,7 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 
 ############################################HARDWARE#################################
 # clear hardware/winch codes from our attention
-	if sheet.cell(row=rowNum, column=ABC).value == 'HDW' or sheet.cell(row=rowNum, column=ABC).value == 'WIN': 
+	if sheet.cell(row=rowNum, column=ABC).value == 'HDW' or sheet.cell(row=rowNum, column=ABC).value == 'WIN' and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    # Net Stock(col.67) and Open Demand(col.66) is 0
 		if debug: print "[Phase:1c]HDW item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
@@ -180,7 +186,7 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 
 ##############################################NEW ITEMS###############################
 # mark new codes for Phil B's attention
-	if sheet.cell(row=rowNum, column=ABC).value == 'NEW': 
+	if sheet.cell(row=rowNum, column=ABC).value == 'NEW' and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    # Net Stock(col.67) and Open Demand(col.66) is 0
 		if debug: print "[Phase:1d]NEW item marked with PB to Review"
 		sheet2.cell(row=rowNum, column=Action).value = 'PB to Review' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
@@ -191,14 +197,14 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 # clear obsolete items from our attention
 			
 #mark obsolete items with >90 days of stock as No Action
-	if sheet.cell(row=rowNum, column=ABC).value == 'OBS' and sheet.cell(row=rowNum, column=DaysCovered).value >= 90: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'OBS' and sheet.cell(row=rowNum, column=DaysCovered).value >= 90 and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if debug: print "[Phase:2b]Obsolete item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = '>90 days of stock available' # JK Comment(col.59) 
 
 #obsolete that need forecasted information for a decision
-	if sheet.cell(row=rowNum, column=ABC).value == 'OBS' and sheet2.cell(row=rowNum, column=Action).value is None: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'OBS' and sheet2.cell(row=rowNum, column=Action).value is None and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 
 		predictednet = returnvalue(rowNum)
 		safety = sheet.cell(row=rowNum, column=SafetyStock).value
@@ -219,26 +225,26 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 #########################################STRANGERS###################################
 # clear strangers from our attention
 #mark stranger items with >90 days of stock as No Action
-	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet.cell(row=rowNum, column=DaysCovered).value >= 90: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet.cell(row=rowNum, column=DaysCovered).value >= 90 and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if debug: print "[Phase:3b]Stranger item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = '>90 days of stock available' # JK Comment(col.59) 
 #mark stranger items with no safety stock and >=0 net stock as No Action
-	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet.cell(row=rowNum, column=SafetyStock).value == 0 and sheet.cell(row=rowNum, column=NetStock).value >= 0: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet.cell(row=rowNum, column=SafetyStock).value == 0 and sheet.cell(row=rowNum, column=NetStock).value >= 0 and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if debug: print "[Phase:3c]Stranger item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = 'No Safety Stock' # JK Comment(col.59) 
 #mark stranger items with net stock >= net stock as No Action
-	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet.cell(row=rowNum, column=NetStock).value >= sheet.cell(row=rowNum, column=SafetyStock).value: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet.cell(row=rowNum, column=NetStock).value >= sheet.cell(row=rowNum, column=SafetyStock).value and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if debug: print "[Phase:3d]Stranger item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = '*Have safety stock on Hand' # JK Comment(col.59) 
 
 #strangers that need forecasted information for a decision
-	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet2.cell(row=rowNum, column=Action).value is None: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'STA' and sheet2.cell(row=rowNum, column=Action).value is None and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 
 		predictednet = returnvalue(rowNum)
 		safety = sheet.cell(row=rowNum, column=SafetyStock).value
@@ -259,14 +265,14 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 # clear strangers from our attention
 	
 #mark repeater items with >90 days of stock as No Action ##DO HEALTH CHECK AGAINST FORECASTS##
-	if sheet.cell(row=rowNum, column=ABC).value == 'REP' and sheet.cell(row=rowNum, column=DaysCovered).value >= 90: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'REP' and sheet.cell(row=rowNum, column=DaysCovered).value >= 90 and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if debug: print "[Phase:4b]Repeater item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = '>90 days of stock available' # JK Comment(col.59) 
 
 #repeaters that need forecasted information for a decision
-	if sheet.cell(row=rowNum, column=ABC).value == 'REP' and sheet2.cell(row=rowNum, column=Action).value is None: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'REP' and sheet2.cell(row=rowNum, column=Action).value is None and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 
 		predictednet = returnvalue(rowNum)
 		safety = sheet.cell(row=rowNum, column=SafetyStock).value
@@ -287,14 +293,14 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 # clear runners from our attention
 	
 #mark runner items with >180 days of stock as No Action##
-	if sheet.cell(row=rowNum, column=ABC).value == 'RUN' and sheet.cell(row=rowNum, column=DaysCovered).value >= 180: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'RUN' and sheet.cell(row=rowNum, column=DaysCovered).value >= 180 and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 	    #Net Stock greater than or eequal to 0 and no demand = No Action
 		if debug: print "[Phase:5b]Runner item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = '>180 days of stock available' # JK Comment(col.59) 
 
 #runners that need forecasted information for a decision
-	if sheet.cell(row=rowNum, column=ABC).value == 'RUN' and sheet2.cell(row=rowNum, column=Action).value is None: 
+	if sheet.cell(row=rowNum, column=ABC).value == 'RUN' and sheet2.cell(row=rowNum, column=Action).value is None and sheet2.cell(row=rowNum, column=Action).value != 'No Action': 
 
 		predictednet = returnvalue(rowNum)
 		safety = sheet.cell(row=rowNum, column=SafetyStock).value
@@ -315,12 +321,10 @@ if debug: plt.show()
 
 #remove graphs and dashboard
 ws3 = wb2.get_sheet_by_name('Graphs')
-ws4 = wb2.get_sheet_by_name('Dashboard')
 
 if ws3 is not None:
 	wb2.remove_sheet(ws3)
-if ws4 is not None:
-	wb2.remove_sheet(ws4)
+
 
 
 print('Saving purchase review...')
