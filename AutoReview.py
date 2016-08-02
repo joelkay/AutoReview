@@ -100,7 +100,10 @@ def returnvalue(rowNum):
 		#MONTH +3
 		df['Actual Sales'].iloc[15] = df['EWMA'].iloc[15] #month + 3 = value estimated by EWMA algorithm at this point in time
 
-		predictednet = sheet.cell(row=rowNum, column=NetStock).value - (df['Actual Sales'].iloc[13] + df['Actual Sales'].iloc[14]) #Current Net Stock - Month 1 and Month 2 demand
+		if sheet.cell(row=rowNum, column=NetStock).value:
+			predictednet = sheet.cell(row=rowNum, column=NetStock).value - (df['Actual Sales'].iloc[13] + df['Actual Sales'].iloc[14]) #Current Net Stock - Month 1 and Month 2 demand
+		else: 
+			predictednet = df['Actual Sales'].iloc[13] + df['Actual Sales'].iloc[14] #Month 1 and Month 2 demand incase there is no net stock/null values
 
 		if debug: df.plot(title = sheet.cell(row=rowNum, column=StockCode).value)
 
@@ -110,6 +113,7 @@ def returnvalue(rowNum):
 		
 
 		return predictednet #how much stock would we have if we sold this and next months stock(  helps us estimate how much we need to replen  )
+
 #################################################################GET AMMOUNT#################################################################################
 def getammount(safety,predictednet,rowNum):
 		qty = safety-predictednet#bias field to tweak how much true qty we need. 
