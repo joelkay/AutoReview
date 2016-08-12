@@ -13,7 +13,6 @@ debug = 0
 ########################
 start_time = time.time()
 #####################################LOAD A PURCHASE SHEET FROM FOLDER#######################################################
-
 ##Load a purchase sheet##
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
 filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
