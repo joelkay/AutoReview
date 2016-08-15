@@ -36,7 +36,7 @@ OrderQty=58
 Action=59
 Comments=60
 StockCode=1
-Supplier=8
+Supplier=7
 SafetyStock=8
 EBQ=11
 OnHand=24
@@ -157,7 +157,6 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 		if debug: print "[Phase:1]Item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = 'Packaging Supplies - Kanban' # JK Comment(col.59)
-
 
 	#GLOBAL CLEAR OUT CODES THAT are not selling but need to get reset to safety stock.
 	if sheet.cell(row=rowNum, column=OpenDemand).value == 0 and sheet.cell(row=rowNum, column=OnHand).value == 0 and sheet2.cell(row=rowNum, column=Action).value != 'No Action':
