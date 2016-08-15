@@ -110,7 +110,6 @@ def returnvalue(rowNum):
 		#work out ammount to order
 		#update sheet
 
-
 		return predictednet #how much stock would we have if we sold this and next months stock(  helps us estimate how much we need to replen  )
 
 #################################################################GET AMMOUNT#################################################################################
@@ -142,12 +141,15 @@ def getammount(safety,predictednet,rowNum):
 
 
 
+
 for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 
 
 ########################################BLANKS/SPECIAL STOCK CODES######################################
 # clear items with No demand and No stock from our attention
-	if  sheet.cell(row=rowNum, column=StockCode).value == 'Q8-6296' or sheet.cell(row=rowNum, column=StockCode).value == 'Q8-6296-1' or sheet.cell(row=rowNum, column=StockCode).value == 'MM-321':#Direct ship orders
+	SpecialStockCode=sheet.cell(row=rowNum, column=StockCode).value
+	SpecialStockCode.strip()#remove all additional whitespace that we dont need.
+	if  SpecialStockCode == 'Q8-6296' or SpecialStockCode == 'Q8-6296-1' or SpecialStockCode == 'MM-321':#Direct ship orders
 		if debug: print "[Phase:1]Item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
 		sheet2.cell(row=rowNum, column=Comments).value = 'Direct Ship' # JK Comment(col.59)
