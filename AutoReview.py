@@ -148,7 +148,7 @@ for rowNum in range(2,sheet.max_row+1): # skip the first row,include last row
 ########################################BLANKS/SPECIAL STOCK CODES######################################
 # clear items with No demand and No stock from our attention
 	SpecialStockCode=sheet.cell(row=rowNum, column=StockCode).value
-	SpecialStockCode.strip()#remove all additional whitespace that we dont need.
+	SpecialStockCode = str(SpecialStockCode).strip()#remove all additional whitespace that we dont need.
 	if  SpecialStockCode == 'Q8-6296' or SpecialStockCode == 'Q8-6296-1' or SpecialStockCode == 'MM-321':#Direct ship orders
 		if debug: print "[Phase:1]Item marked with No Action"
 		sheet2.cell(row=rowNum, column=Action).value = 'No Action' # Action(col.58) 'Note: We are updating the workbook with formulas from sheet2*'
