@@ -2,14 +2,14 @@
 AL600020 Buckle Stalk Situation
 
 320pcs                  required to ship UPS 08/19, QSUK arrival required 08/24 latest
-6084 -> Increases from 50 to 300 (done)
-6088 -> Cancelled (done)
+6084 -> Increases from 50 to 300 (donex2)
+6088 -> Cancelled (donex2)
 
 100pcs                  required to ship AIR
-6089 {decrease from 150 to 100 req to ship via Air} (done)
+6089 {decrease from 150 to 100 req to ship via Air} (donex2)
 
 300pcs                  required ship on Sept FCL
-6057 -> Done
+6057 -> Donex2
 
 300pcs                  required to ship on Oct FCL
-6085 -> Done
+6085 -> Donex2
